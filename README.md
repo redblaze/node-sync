@@ -1,5 +1,9 @@
 # node-sync
 
+## Note
+
+This only work with NodeJS 0.11.*, which has support to generators.  You need to run node with the option "--harmony" in order to use generators.
+
 ## Install
 
 ```text
