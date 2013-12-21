@@ -1,21 +1,4 @@
-# node-sync
-
-## Install
-
-```text
-npm install node-sync
-```
-
-## Use
-
-```js
-var sync = requrire('node-sync');
-```
-
-## Example
-
-```js
-var toProc = require('node-sync');
+var toProc = require('../lib/sync');
 
 var cb = function(err, res) {
     if (err) {
@@ -56,7 +39,3 @@ var p3 = function*(n) {
 };
 
 toProc(p3)(10)(cb);
-
-```
-
-
