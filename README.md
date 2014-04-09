@@ -1,5 +1,30 @@
 # node-sync
 
+## Description
+
+We call a function of the following signature a procedure:
+
+```js
+function(arg1, arg2, ..., cb)
+```
+
+A procedure takes a list of arguments, where the last one is always a callback.
+
+We call a generator that only yields procedures a procedural generator.  Then this package provides a combinator function that turns a procedural generator of the following signature:
+
+```js
+function*(arg1, arg2, ...,)
+```
+
+into a procedure of the following signature:
+
+```js
+function(arg1, arg2, ..., cb)
+```
+
+This provides a way to compose procedural generators to build larger procedural generators in a simple way.  See [examples](#examples).
+
+
 ## Note
 
 This only work with NodeJS 0.11.*, which has support to generators.  You need to run node with the option "--harmony" in order to use generators.
@@ -13,9 +38,10 @@ npm install node-sync
 ## Use
 
 ```js
-var sync = requrire('node-sync');
+var proc = requrire('node-sync');
 ```
 
+<a name="examples"/>
 ## Example
 
 ```js
