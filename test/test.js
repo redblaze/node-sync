@@ -10,6 +10,7 @@ var cb = function(err, res) {
     }
 };
 
+
 var remoteAdd = proc(function*(a, b) {
     try {
         var c = yield function(cb) {
@@ -43,8 +44,9 @@ var remoteSum = proc(function*(n) {
 
         return res;
     } catch(e) {
-        console.log(e);
-        return 'swallow error in remoteSum';
+        // console.log(e);
+        throw e;
+        // return 'swallow error in remoteSum';
     }
 });
 
