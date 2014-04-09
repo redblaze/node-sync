@@ -19,48 +19,68 @@ var sync = requrire('node-sync');
 ## Example
 
 ```js
-var toProc = require('node-sync');
+Error.stackTraceLimit = Infinity;
+
+var proc = require('../lib/sync');
 
 var cb = function(err, res) {
     if (err) {
-        console.log('ERROR', err);
+        console.log('cb ERROR', err.stack);
     } else {
         console.log('OK', res);
     }
 };
 
-var p1 = function*(a, b) {
-    console.log('start p1');
-    var c = yield function(cb) {
-        setTimeout(
-            function() {
-                cb(null, 1);
-            },
-            1000
-        );
-    };
-    console.log(c);
-    return (a+b);
-};
-
-var p2 = function*(a, b) {
-    console.log('start p2');
-
-    return 4 + (yield toProc(p1)(1,2));
-};
-
-var p3 = function*(n) {
-    var res = 0;
-
-    for (i = 0; i < n; i++) {
-        res = yield toProc(p1)(res, i);
+var remoteAdd = proc(function*(a, b) {
+    try {
+        var c = yield function(cb) {
+            setTimeout(
+                function() {
+                    if (b == 5) {
+                        cb (new Error('foobar'));
+                    } else {
+                        cb(null, a + b);
+                    }
+                },
+                1000
+            );
+        };
+        return c;
+    } catch(e) {
+        console.log('catch error in remoteAdd');
+        throw e;
+        // return a + b;
     }
+});
 
-    return res;
-};
+var remoteSum = proc(function*(n) {
+    try {
+        var res = 0;
 
-toProc(p3)(10)(cb);
+        for (i = 0; i < n; i++) {
+            res = yield remoteAdd(res, i);
+            console.log(res);
+        }
 
+        return res;
+    } catch(e) {
+        console.log(e);
+        return 'swallow error in remoteSum';
+    }
+});
+
+var main = proc(function*() {
+    try {
+        var res = yield remoteSum(10);
+        console.log('success in main');
+        return res;
+    } catch(e) {
+        console.log('catch err in main');
+        throw(e);
+    }
+});
+
+main()(cb);
 ```
 
 
