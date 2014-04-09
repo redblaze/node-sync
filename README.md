@@ -22,7 +22,7 @@ into a procedure of the following signature:
 function(arg1, arg2, ..., cb)
 ```
 
-This provides a way to compose procedural generators to build larger procedural generators in a simple way.  See [examples](#example).
+This provides a way to compose procedural generators to build larger procedural generators in a simple way.  See [examples](#examples).
 
 
 ## Note
@@ -41,7 +41,7 @@ npm install node-sync
 var proc = requrire('node-sync');
 ```
 
-<a name="examples" />
+<a name="examples"/>
 ## Example
 
 ```js
