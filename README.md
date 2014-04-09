@@ -22,7 +22,7 @@ into a procedure of the following signature:
 function(arg1, arg2, ..., cb)
 ```
 
-This provides a way to compose procedural generators to build larger procedural generators in a simple way.  See [examples](#examples).
+This provides a way to compose procedural generators to build larger procedural generators in a simple way.  See [examples](#example).
 
 
 ## Note
