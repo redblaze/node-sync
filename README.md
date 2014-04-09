@@ -41,7 +41,6 @@ npm install node-sync
 var proc = requrire('node-sync');
 ```
 
-<a name="examples"/>
 ## Example
 
 ```js
