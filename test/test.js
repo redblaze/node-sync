@@ -4,40 +4,38 @@ var proc = require('../lib/sync');
 
 var cb = function(err, res) {
     if (err) {
-        console.log('cb ERROR', err);
+        console.log('cb ERROR', err.stack);
     } else {
         console.log('OK', res);
     }
 };
 
 var remoteAdd = proc(function*(a, b) {
-    try{
-        yield function(cb) {
+    try {
+        var c = yield function(cb) {
             setTimeout(
                 function() {
-                    if (b == 1) {
-                        cb(new Error('error on 5'));
+                    if (b == 5) {
+                        cb (new Error('foobar'));
                     } else {
-                        cb();
+                        cb(null, a + b);
                     }
                 },
                 1000
             );
         };
-
+        return c;
     } catch(e) {
+        console.log('catch error in remoteAdd');
         throw e;
-        // console.log('catch error');
+        // return a + b;
     }
-
-    return (a+b);
 });
 
-
 var remoteSum = proc(function*(n) {
-    var res = 0;
-
     try {
+        var res = 0;
+
         for (i = 0; i < n; i++) {
             res = yield remoteAdd(res, i);
             console.log(res);
@@ -45,21 +43,23 @@ var remoteSum = proc(function*(n) {
 
         return res;
     } catch(e) {
-        return 'catch error on 5';
+        console.log(e);
+        return 'swallow error in remoteSum';
     }
 });
 
-// remoteSum(10)(cb);
 var main = proc(function*() {
     try {
-        var res = yield remoteAdd(2, 1);
-        console.log('res: ', res);
+        var res = yield remoteSum(10);
+        console.log('success in main');
         return res;
     } catch(e) {
         console.log('catch err in main');
+        throw(e);
     }
 });
 
 main()(cb);
+
 
 
