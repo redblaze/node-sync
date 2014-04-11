@@ -52,10 +52,12 @@ var proc = require('../lib/sync');
 var cb = function(err, res) {
     if (err) {
         console.log('cb ERROR', err.stack);
+        console.log(err.__generatorStack__);
     } else {
         console.log('OK', res);
     }
 };
+
 
 var remoteAdd = proc(function*(a, b) {
     try {
@@ -90,8 +92,9 @@ var remoteSum = proc(function*(n) {
 
         return res;
     } catch(e) {
-        console.log(e);
-        return 'swallow error in remoteSum';
+        // console.log(e);
+        throw e;
+        // return 'swallow error in remoteSum';
     }
 });
 
