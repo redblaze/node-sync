@@ -1,7 +1,10 @@
 
 Error.stackTraceLimit = Infinity;
 
-var proc = require('../lib/sync2');
+var sync2 = require('../lib/sync2');
+var proc = sync2.proc;
+var implicit = sync2.implicit;
+var letImplicit = sync2.letImplicit;
 
 var cb = function(err, res) {
 	if (err) {
@@ -23,29 +26,6 @@ var square = proc(function*(a) {
 		}, 1000);
 	});
 });
-
-var implicit = function(k) {
-	return function (env, cb) {
-		cb(null, env[k]);
-	};
-};
-
-var letImplicit = function(ext, proc) {
-	return function(env, cb) {
-		proc(extScope(env, ext), cb);
-	};	
-};
-
-var extScope = function(env, ext) {
-	var res = {};
-	for (var k in env) {
-		res[k] = env[k];
-	}
-	for (var k in ext) {
-		res[k] = ext[k];
-	}
-	return res;
-};
 
 var remoteAdd = proc(function*(a, b) {
 	try {
