@@ -13,23 +13,24 @@ var cb = function(err, res) {
 };
 
 var square = proc(function*(a) {
-	console.log(yield getScope);
-		
+	var co = yield implicit('co') || 1;
 	return yield(function(env, cb) {
 	// throw new Error('foobar');
 		setTimeout(function() {
-			var co = env['co'] || 1;
+			console.log('co is: ', co);
 			console.log('compute square: ', co*a*a);
 			cb(null, co*a*a);
 		}, 1000);
 	});
 });
 
-var getScope = function(env, cb) {
-	cb(null, env);
+var implicit = function(k) {
+	return function (env, cb) {
+		cb(null, env[k]);
+	};
 };
 
-var letScope = function(ext, proc) {
+var letImplicit = function(ext, proc) {
 	return function(env, cb) {
 		proc(extScope(env, ext), cb);
 	};	
@@ -48,7 +49,7 @@ var extScope = function(env, ext) {
 
 var remoteAdd = proc(function*(a, b) {
 	try {
-		var a2 = yield letScope({co: 3}, square(a));
+		var a2 = yield letImplicit({co: 3}, square(a));
 
 		var b2 = yield square(b);
 		
