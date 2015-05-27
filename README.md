@@ -47,7 +47,7 @@ var proc = requrire('node-sync');
 ```js
 Error.stackTraceLimit = Infinity;
 
-var proc = require('../lib/sync');
+var proc = require('node-sync').proc;
 
 var cb = function(err, res) {
     if (err) {

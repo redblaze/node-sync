@@ -1,6 +1,6 @@
 Error.stackTraceLimit = Infinity;
 
-var proc = require('../lib/sync');
+var proc = require('../lib/main').proc;
 
 var cb = function(err, res) {
     if (err) {

@@ -1,10 +1,10 @@
 
 Error.stackTraceLimit = Infinity;
 
-var sync2 = require('../lib/sync2');
-var proc = sync2.proc;
-var implicit = sync2.implicit;
-var letImplicit = sync2.letImplicit;
+var sync = require('../lib/main');
+var proc = sync.proc2;
+var implicit = sync.implicit;
+var letImplicit = sync.letImplicit;
 
 var cb = function(err, res) {
 	if (err) {

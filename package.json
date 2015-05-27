@@ -1,9 +1,9 @@
 {
     "name": "node-sync",
     "description": "A simple lib that turns generators to async functions",
-    "main": "./lib/sync",
+    "main": "./lib/main",
     "author": "Chiyan Chen",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "repository" : {
         "type" : "git",
         "url" : "https://github.com/redblaze/node-sync.git"
