@@ -22,7 +22,8 @@ var square = proc(function*(a) {
 		setTimeout(function() {
 			console.log('co is: ', co);
 			console.log('compute square: ', co*a*a);
-			cb(null, co*a*a);
+			// cb(null, co*a*a);
+			cb(new Error('foobar'));
 		}, 1000);
 	});
 });
@@ -32,7 +33,7 @@ var remoteAdd = proc(function*(a, b) {
 		var a2 = yield letImplicit({co: 3}, square(a));
 
 		var b2 = yield square(b);
-		
+
 		return a2 + b2;
 	} catch(e) {
 		throw e;
