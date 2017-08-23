@@ -1,6 +1,6 @@
 Error.stackTraceLimit = Infinity;
 
-var sync = require('../lib/main').proc3;
+var sync = require('../lib/main').sync3;
 var co = sync.proc;
 var implicit = sync.implicit;
 var letImplicit = sync.letImplicit;
