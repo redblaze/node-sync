@@ -6,7 +6,7 @@ var implicit = sync.implicit;
 var letImplicit = sync.letImplicit;
 var getState = sync.getState;
 var setState = sync.setState;
-var tame = sync.tame;
+var lift = sync.lift;
 
 var mul = function(a, b, cb) {
     setTimeout(function() {
@@ -17,7 +17,7 @@ var mul = function(a, b, cb) {
 var square = co(function*(a) {
     var coeff = yield getState('coeff');
     console.log(coeff);
-    return coeff * (yield tame(mul)(a, a));
+    return coeff * (yield lift(mul)(a, a));
 });
 
 var squareSum = co(function*(a, b) {
