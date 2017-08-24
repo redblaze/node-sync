@@ -46,6 +46,11 @@ var remoteSum = proc(function*(n) {
         return res;
     } catch(e) {
         // console.log(e);
+        console.log('catch err in remoteSum');
+        console.log('~~~~~~~');
+        console.log('log error in remoteSum: ', e.stack);
+        console.log(e.__generatorStack__);
+        console.log('~~~~~~~');
         throw e;
         // return 'swallow error in remoteSum';
     }
@@ -58,6 +63,10 @@ var main = proc(function*() {
         return res;
     } catch(e) {
         console.log('catch err in main');
+        console.log('======');
+        console.log('log error in main: ', e.stack);
+        console.log(e.__generatorStack__);
+        console.log('======');
         throw(e);
     }
 });
