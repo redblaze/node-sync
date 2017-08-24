@@ -1,8 +1,9 @@
 Error.stackTraceLimit = Infinity;
 
-var proc = require('../lib/main').proc;
+// var proc = require('../lib/main').proc;
+var proc = require('../lib/main').sync3.proc;
 
-var cb = function(err, res) {
+var cb = function(s, err, res) {
     if (err) {
         console.log('cb ERROR', err.stack);
         console.log(err.__generatorStack__);
@@ -14,13 +15,13 @@ var cb = function(err, res) {
 
 var remoteAdd = proc(function*(a, b) {
     try {
-        var c = yield function(cb) {
+        var c = yield function(e, s, cb) {
             setTimeout(
                 function() {
                     if (b == 5) {
-                        cb (new Error('foobar'));
+                        cb (s, new Error('foobar'));
                     } else {
-                        cb(null, a + b);
+                        cb(s, null, a + b);
                     }
                 },
                 1000
@@ -71,7 +72,7 @@ var main = proc(function*() {
     }
 });
 
-main()(cb);
+main()({}, {}, cb);
 
 
 
