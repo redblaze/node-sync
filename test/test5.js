@@ -16,13 +16,15 @@ var sleep = co(function*(time) {
 });
 
 var printSequence = co(function*(s) {
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 20; i++) {
         console.log(s + i);
         yield sleep(500 * Math.random());
     }
 });
 
 var main = co(function*() {
+    yield printSequence('a');
+    yield printSequence('b');
     yield parallel([printSequence('a'), printSequence('b')]);
 });
 
