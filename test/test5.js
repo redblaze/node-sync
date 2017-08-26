@@ -6,14 +6,8 @@ var getState = sync.getState;
 var setState = sync.setState;
 var lift = sync.lift;
 var parallel = sync.parallel;
+var sleep = sync.sleep;
 
-var sleep = co(function*(time) {
-    yield function(e, s, cb) {
-        setTimeout(function() {
-            cb(s);
-        }, time);
-    };
-});
 
 var printSequence = co(function*(s) {
     for (var i = 0; i < 20; i++) {
