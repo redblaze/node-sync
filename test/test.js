@@ -13,7 +13,7 @@ var cb = function(s, err, res) {
 };
 
 
-var remoteAdd = proc(function*(a, b) {
+var remoteAdd = function*(a, b) {
     try {
         var c = yield function(e, s, cb) {
             setTimeout(
@@ -33,14 +33,15 @@ var remoteAdd = proc(function*(a, b) {
         throw e;
         // return a + b;
     }
-});
+};
 
 var remoteSum = proc(function*(n) {
     try {
         var res = 0;
 
         for (i = 0; i < n; i++) {
-            res = yield remoteAdd(res, i);
+            // res = yield (proc(remoteAdd))(res, i);
+            res = yield* remoteAdd(res, i);
             console.log(res);
         }
 
