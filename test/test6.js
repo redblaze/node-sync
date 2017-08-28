@@ -95,7 +95,7 @@ var threadTest3 = co(function*() {
 
 
 var main = co(function*() {
-    return yield* f();
+    return yield* threadTest3();
 });
 
 proc(main)()({a: 1}, {}, function(s, err, res) {
