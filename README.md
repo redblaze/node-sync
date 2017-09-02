@@ -38,7 +38,7 @@ npm install node-sync
 ## Use
 
 ```js
-var proc = requrire('node-sync');
+var proc = require('node-sync');
 ```
 
 <a name="examples"/>
