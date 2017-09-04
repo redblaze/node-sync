@@ -74,20 +74,20 @@ eval(require('./require_bundle')('sync'));
 
 ## API Documents
 
-* Basic
+* [Basic](#basic)
     * [co](#co)
     * [proc](#proc)
     * [lift](#lift)
-* CLS (continuation local state)
+* [CLS (continuation local state)](#cls)
     * [$let](#$let)
     * [$get](#$get)
-* Thread
+* [Thread](#thread)
     * [Thread.folk](#thread_folk)
     * [thread.join](#thread_join)
     * [Thread.select](#thread_select)
     * [Thread.timeout](#thread_timeout)
 
-
+<a name="basic"></a>
 ### Basic
 <a name="co"></a>
 #### co: (generator\_function) -> generator\_function
@@ -200,6 +200,7 @@ If you are simply looking for an ES6 emulation of async/await before ES7 is gene
 * CLS (continuation local state)
 * parallelism and thread emulation
 
+<a name="cls"></a>
 ### CLS (continuation local state)
 
 CLS is parallel to thread local state in Java.  It is inevitably useful for certain patterns of programming.  node-sync provides a clean built-in solution of CLS, without any hacky approaches such as messing up with the runtime environment event loop, or tweaky polyfilling.
@@ -356,6 +357,7 @@ proc(main)()({}, cb);
 To have a pass through state that belongs to the current chain of computation, we simply need to defined a key ```__state__``` in the outmost enclosing environment.  Functions such as ```read``` and ```write``` are defined to operate on this particular piece of state, which is always available in the environment.  The example above shows how to count the number of calls to ```square``` throughout the program execution.  Relevant lines that manipulate the states are 46, 38, 41, 23 and 33.
 
 
+<a name="thread"></a>
 ### Thread
 
 Thread is a name space for static functions, as well as class constructor for creating thread objects.  Note that in the following, fork, select and timeout are static functions defined in the Thread namespace, while join is a dynamic function that can only be invoked on a thread object.
