@@ -34,32 +34,32 @@ Or I usually define a <i> Macro </i>:
 
 ```javascript
 var requireBundle = function(name) {
-	switch(name) {
-		case 'sync':
-			return [
-				'var sync = require("node-sync").sync5;',
-				'var co = sync.co;',
-				'var proc = sync.proc;',
-				'var $let = sync.$let;',
-				'var $get = sync.$get;',
-				'var lift = sync.lift;',
-				'var Thread = sync.Thread;',
-				'var sleep = sync.sleep;'
-			];
-		default: 
-			throw new Error('requireBundle does not support: ' + name);
-	}
+    switch(name) {
+        case 'sync':
+            return [
+                'var sync = require("node-sync").sync5;',
+                'var co = sync.co;',
+                'var proc = sync.proc;',
+                'var $let = sync.$let;',
+                'var $get = sync.$get;',
+                'var lift = sync.lift;',
+                'var Thread = sync.Thread;',
+                'var sleep = sync.sleep;'
+            ];
+        default: 
+            throw new Error('requireBundle does not support: ' + name);
+    }
 };
 
 module.exports = function() {
-	var l = [];
+    var l = [];
 
-	for (var i = 0; i < arguments.length; i++) {
-		var bundleName = arguments[i];
-		l = l.concat(requireBundle(bundleName));
-	}
+    for (var i = 0; i < arguments.length; i++) {
+        var bundleName = arguments[i];
+        l = l.concat(requireBundle(bundleName));
+    }
 
-	return l.join('');
+    return l.join('');
 };
 
 ```
@@ -73,17 +73,17 @@ eval(require('./require_bundle')('sync'));
 ## API Documents
 
 * Basic
-	* [co](#co)
-	* [proc](#proc)
-	* [lift](#lift)
+    * [co](#co)
+    * [proc](#proc)
+    * [lift](#lift)
 * CLS (continuation local state)
-	* [$let](#$let)
-	* [$get](#$get)
+    * [$let](#$let)
+    * [$get](#$get)
 * Thread
-	* [Thread.folk](#thread_folk)
-	* [thread.join](#thread_join)
-	* [Thread.select](#thread_select)
-	* [Thread.timeout](#thread_timeout)
+    * [Thread.folk](#thread_folk)
+    * [thread.join](#thread_join)
+    * [Thread.select](#thread_select)
+    * [Thread.timeout](#thread_timeout)
 
 
 ### Basic
@@ -219,33 +219,33 @@ Let's look at examples to illustrate the use of CLS.  Let develop this example s
 
 ```javascript
 var cb = function(err, res) {
-	if (err) {
-		console.log('cb ERROR', err.stack);
-		console.log(err.__generatorStack__);
-	} else {
-		console.log('OK', res);
-	}
+    if (err) {
+        console.log('cb ERROR', err.stack);
+        console.log(err.__generatorStack__);
+    } else {
+        console.log('OK', res);
+    }
 };
 
 var square = co(function*(a) {
-	var res = yield* lift(function(cb) {
-		setTimeout(function() {
-			cb(null, a * a);
-		}, 1000);
-	})();
+    var res = yield* lift(function(cb) {
+        setTimeout(function() {
+            cb(null, a * a);
+        }, 1000);
+    })();
 
-	return res;
+    return res;
 });
 
 var remoteAdd = co(function*(a, b) {
-	var a2 = yield* square(a);
-	var b2 = yield* square(b);
-	return a2 + b2;
+    var a2 = yield* square(a);
+    var b2 = yield* square(b);
+    return a2 + b2;
 });
 
 var main = co(function*() {
-	var res = yield* remoteAdd(1, 2);
-	return res;
+    var res = yield* remoteAdd(1, 2);
+    return res;
 });
 
 proc(main)()({}, cb);
@@ -255,36 +255,36 @@ In this program, we simply compute ```1*1 + 2*2``` (in a intended twisted way, o
 
 ```javascript
 var cb = function(err, res) {
-	if (err) {
-		console.log('cb ERROR', err.stack);
-		console.log(err.__generatorStack__);
-	} else {
-		console.log('OK', res);
-	}
+    if (err) {
+        console.log('cb ERROR', err.stack);
+        console.log(err.__generatorStack__);
+    } else {
+        console.log('OK', res);
+    }
 };
 
 var square = co(function*(a) {
-	var coeff = yield* $get('coeff') || 1;
-	
-	var res = yield* lift(function(cb) {
-		setTimeout(function() {
-			cb(null, coeff * a * a);
-		}, 1000);
-	})();
+    var coeff = yield* $get('coeff') || 1;
+    
+    var res = yield* lift(function(cb) {
+        setTimeout(function() {
+            cb(null, coeff * a * a);
+        }, 1000);
+    })();
 
-	return res;
+    return res;
 });
 
 var remoteAdd = co(function*(a, b) {
-	var a2 = yield* $let({coeff: 3}, square)(a);
-	var b2 = yield* square(b);
-	return a2 + b2;
+    var a2 = yield* $let({coeff: 3}, square)(a);
+    var b2 = yield* square(b);
+    return a2 + b2;
 });
 
 var main = co(function*() {
-	var e = {coeff: 5};
-	var res = yield* $let(e, remoteAdd) (1, 2);
-	return res;
+    var e = {coeff: 5};
+    var res = yield* $let(e, remoteAdd) (1, 2);
+    return res;
 });
 
 proc(main)()({}, cb);
@@ -309,42 +309,42 @@ var write = co(function*(k, v) {
 
 
 var cb = function(err, res) {
-	if (err) {
-		console.log('cb ERROR', err.stack);
-		console.log(err.__generatorStack__);
-	} else {
-		console.log('OK', res);
-	}
+    if (err) {
+        console.log('cb ERROR', err.stack);
+        console.log(err.__generatorStack__);
+    } else {
+        console.log('OK', res);
+    }
 };
 
 var square = co(function*(a) {
-	var coeff = yield* $get('coeff') || 1;
-	var count = yield* read('mult_count');
+    var coeff = yield* $get('coeff') || 1;
+    var count = yield* read('mult_count');
 
-	if (count == null) {count = 0;};
+    if (count == null) {count = 0;};
 
-	var res = yield* lift(function(cb) {
-		setTimeout(function() {
-			cb(null, coeff * a * a);
-		}, 1000);
-	})();
+    var res = yield* lift(function(cb) {
+        setTimeout(function() {
+            cb(null, coeff * a * a);
+        }, 1000);
+    })();
 
-	yield* write('mult_count', count + 1);
-	return res;
+    yield* write('mult_count', count + 1);
+    return res;
 });
 
 var remoteAdd = co(function*(a, b) {
-	yield* write('mult_count', 0);
-	var a2 = yield* $let({coeff: 3}, square)(a);
-	var b2 = yield* square(b);
-	console.log('There are', yield* read('mult_count'), 'square operation(s) conducted.');
-	return a2 + b2;
+    yield* write('mult_count', 0);
+    var a2 = yield* $let({coeff: 3}, square)(a);
+    var b2 = yield* square(b);
+    console.log('There are', yield* read('mult_count'), 'square operation(s) conducted.');
+    return a2 + b2;
 });
 
 var main = co(function*() {
-	var e = {coeff: 5, __state__: {}};
-	var res = yield* $let(e, remoteAdd) (1, 2);	
-	return res;
+    var e = {coeff: 5, __state__: {}};
+    var res = yield* $let(e, remoteAdd) (1, 2);    
+    return res;
 
 });
 
