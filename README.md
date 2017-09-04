@@ -1,14 +1,16 @@
 # node-sync
 
+First of all, if you're looking for the old readme, it's [here](https://github.com/redblaze/node-sync/blob/master/archive/OLD_README.md).  The older version still works.  But you are high recommended to use the new version, which is much more refined and enhanced.
+
 Programming in NodeJS with callback passing style can be error prone and difficult to maintain.  In particular:
 
-1. Functional calls can be deeply nested, resulting in <i>callback hell</i>.
+1. Functional calls can be deeply nested, a.k.a., <i>callback hell</i>.
 
 
-2. Exceptions are not propagating with continuations.  Programmers are required to catch exceptions in each block and pass them explicitly to the callback (in the error argument position).
+2. Exceptions are not automatically propagating with continuations.  Programmers are required to catch exceptions in each block and pass them explicitly to the callback (in the error argument position).
 
 
-3. It is dangerous to handle explicit callbacks in code.  A callback function, in most intended common cases, should be invoked once and only once.  It is a huge burden for developers to maintain this invariant when coding.  If a callback is not invoked, then the program will usually halt; on the other hand, if a callback is invoked more than once (unintendedly), then the program will reach a limbo state.
+3. It is dangerous to handle explicit callbacks in code.  A callback function, in most intended common cases, should be invoked once and only once.  It is a huge burden for developers to maintain this invariant when coding.  If a callback is not invoked, then the program will usually halt; on the other hand, if a callback is invoked more than once (unintentionally), then the program will reach a limbo state.
 
 4. When there is an error happening in the program, the stack information is usually not very helpful.  This is because the async callback function chaining is breaking normal stack layering, such that it can be very difficult for develop to trace, via error stacks, to where the code error really happens.
 
@@ -356,18 +358,152 @@ To have a pass through state that belongs to the current chain of computation, w
 
 ### Thread
 
+Thread is a name space for static functions, as well as class constructor for creating thread objects.  Note that in the following, fork, select and timeout are static functions defined in the Thread namespace, while join is a dynamic function that can only be invoked on a thread object.
+
 <a name="thread_folk"></a>
-#### Thread.folk
+#### Thread.fork
+
+Thread.fork takes a generator function as input and use it to generate a thread object.  It immediately puts the thread into execution, and return the thread object as output.  Note that the only way you can obtain a thread object is via calling Thread.fork function (at least before you look under the hood).
 
 <a name="thread_join"></a>
 #### thread.join
 
+With a running thread object in hand, you may choose to join it back to the main thread you are currently running in (similar to java thread join).  That is, when you can thread.join, your current computation will be blocked until thread finishes with either a return value, or throw an error.  You can catch the error with try/catch.
+
+#### Example
+
+```javascript
+var printNumbers = co(function*(label) {
+    for (var i = 0; i < 10; i++) {
+        console.log(label + ':' + i);
+        yield* sleep(500 * Math.random());
+    }
+    return label + ':' + 100;
+});
+
+var threadTest = co(function*() {
+    var thread1 = yield* sync.Thread.fork(co(function*() {
+        return yield* printNumbers('a');
+    }));
+
+    var thread2 = yield* sync.Thread.fork(co(function*() {
+        return yield* printNumbers('b');
+    }));
+
+    var res1 = yield* thread1.join();
+    var res2 =  yield* thread2.join();
+    return [res1, res2];
+});
+
+
+var main = co(function*() {
+    return yield* threadTest();
+});
+
+proc(main)()({}, function(err, res) {
+    if (err) {
+        console.log('Error:', err);
+    } else {
+        console.log('Ok:', res);
+    }
+});
+```
+
+In this example, we interleave two sequences labelled by 'a' and 'b' respectively.  Note that on line 18 and 19, we join the two threads back to the main thread, which means the main thread will only ends after both threads printing 'a' and 'b' end.  If line 18 and 19 are commented out, the program will execute pretty much the same way, but the main thread will not wait for the printing threads to finish.  Instead, it will exit immediately after forking the two printing threads.
+
 <a name="thread_select"></a>
 #### Thread.select
+
+Thread.select take two generation functions as input.  It treats them as threads, execute them in parallel, and returns whenever one of the two threads returns normally, with the other thread's results abandoned.  In other words, Thread.select runs two threads and takes only the result of the one which finishes faster.  Please <b>do note that</b> the slower thread will continue to run and create whatever side effects that it would create.  It is just it return value is not being considered by the main thread.
+
+#### Example
+
+```js
+var printNumbers = co(function*(label) {
+    for (var i = 0; i < 10; i++) {
+        console.log(label + ':' + i);
+        yield* sync.sleep(500 * Math.random());
+    }
+    return label + ':' + 100;
+});
+
+var threadTest2 = co(function*() {
+    return yield* sync.Thread.select(
+        co(function*() {
+            return yield* printNumbers('a');
+        }),
+        co(function*() {
+            return yield* printNumbers('b');
+        })
+    );
+
+});
+
+var main = co(function*() {
+    return yield* threadTest2();
+});
+
+proc(main)()({}, function(err, res) {
+    if (err) {
+        console.log('Error:', err);
+    } else {
+        console.log('Ok:', res);
+    }
+});
+```
+
+This example is very similar to the previous one.  The only difference is the main thread will not wait until both printing threads to finish.  Instead, the main thread will finish as soon as one of the printing thread finishes.  Note that the other thread will continue to run and finishes printing it sequence.  It is just the result it returns is disregarded.
 
 <a name="thread_timeout"></a>
 #### Thread.timeout
 
+Thread.select may look not very useful directly, but it is used to implement Thread.timeout, which can be very useful.  Thead.timeout takes a time and a generator function as inputs.  It treats the generator function as a thread and kick off its execution immediately.  If the thread finishes (either normally or with exception) within the time limit, then the main thread goes on with its result.  Otherwise, the main thread will get a timeout exception and continue without further consideration of the result being returned by the thread.  Again, note that the thread will continue to run and create whatever side effects that it would create.  It is simply its result is discarded by the main thread.
+
+#### Example
+
+```js
+var printNumbers = co(function*(label) {
+    for (var i = 0; i < 10; i++) {
+        console.log(label + ':' + i);
+        yield* sync.sleep(500 * Math.random());
+    }
+    return label + ':' + 100;
+});
+
+var threadTest2 = co(function*() {
+    return yield* sync.Thread.select(
+        co(function*() {
+            return yield* printNumbers('a');
+        }),
+        co(function*() {
+            return yield* printNumbers('b');
+        })
+    );
+
+});
+
+var threadTest3 = co(function*() {
+    return yield* sync.Thread.timeout(
+        2.6 * 1000,
+        threadTest2
+    );
+});
+
+
+var main = co(function*() {
+    return yield* threadTest3();
+});
+
+proc(main)()({}, function(err, res) {
+    if (err) {
+        console.log('Error:', err);
+    } else {
+        console.log('Ok:', res);
+    }
+});
+```
+
+This example is similar to the previous one, where the only difference is a timeout is set to bound the run time of the printing threads.
 
 
 
