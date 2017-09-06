@@ -3,39 +3,12 @@
 var sync = require('../lib/main').sync5;
 var co = sync.co;
 var proc = sync.proc;
-var implicit = sync.implicit;
-var letImplicit = sync.letImplicit;
+var $let = sync.$let;
+var $get = sync.$get;
 var lift = sync.lift;
 var sleep = sync.sleep;
 var Thread = sync.Thread;
 
-
-var sleep0 = function(time, error, cb) {
-    setTimeout(function() {
-        if (error) {
-            cb(new Error('foobar'));
-        } else {
-            cb();
-        }
-    }, time);
-};
-
-var g = co(function*(x) {
-    console.log('calling g with', x);
-    yield* sync.lift(sleep0)(1000, true);
-    // yield sync.lift0(sleep0)(1000, true);
-    // yield* sleep2(1000);
-    // throw new Error('foobar2');
-    return x;
-});
-
-var f = co(function*() {
-    var g0 = co(function*(x) {
-        return yield proc(g)(x);
-    });
-
-    return yield* g0(100);
-});
 
 var printNumbers = co(function*(label) {
     for (var i = 0; i < 10; i++) {
@@ -85,7 +58,7 @@ var threadTest3 = co(function*() {
 
 
 var main = co(function*() {
-    return yield* threadTest3('a');
+    return yield* threadTest3();
 });
 
 proc(main)()({a: 1}, function(err, res) {
